@@ -1,0 +1,214 @@
+*&---------------------------------------------------------------------*
+*& Include          ZM_LHS_HR1O01
+*&---------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*& Module STATUS_0100 OUTPUT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+MODULE STATUS_0100 OUTPUT.
+
+  DATA: LV_TITLE TYPE C LENGTH 10.
+
+  IF GV_SNAME IS INITIAL.
+    GV_SNAME = '0200'.
+  ENDIF.
+
+  CASE GV_SNAME.
+    WHEN '0200'.
+      LV_TITLE = '업로드 화면입니다.'.
+    WHEN '0110'.
+      LV_TITLE = '조회 화면입니다.'.
+    WHEN '0120'.
+      LV_TITLE = '입사 화면입니다.'.
+    WHEN OTHERS.
+  ENDCASE.
+
+  SET PF-STATUS 'PF_0100'.
+  SET TITLEBAR 'T_0100' WITH LV_TITLE.
+
+
+
+
+
+
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*& Module MODIFY_SCREEN OUTPUT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+MODULE MODIFY_SCREEN OUTPUT.
+
+  CASE GV_SNAME.
+    WHEN '0200'.
+      BTN01 = '업로드'.
+    WHEN '0110'.
+      BTN01 = '조회'.
+    WHEN '0120'.
+      BTN01 = '입사'.
+    WHEN OTHERS.
+  ENDCASE.
+
+*  LOOP AT SCREEN.
+*    IF GV_SNAME EQ '0110'.
+*      IF SCREEN-NAME = 'EMP_SEQ-LOW'.
+*           SCREEN-INPUT = '0'.
+*        MODIFY SCREEN.
+*      ENDIF.
+*
+*    ENDIF.
+*    ENDLOOP.
+*
+*    IF GV_SNAME EQ '0110'.
+*      IF SCREEN-NAME = 'BTN01'.
+*        SCREEN-ACTIVE = 0.
+*        MODIFY SCREEN.
+*      ENDIF.
+*      IF SCREEN-NAME = 'BTN02'.
+*        SCREEN-ACTIVE = 1.
+*        MODIFY SCREEN.
+*      ENDIF.
+*    IF SCREEN-NAME = 'BTN03'.
+*        SCREEN-ACTIVE = 0.
+*        MODIFY SCREEN.
+*      ENDIF.
+*    ENDIF.
+*
+*    IF GV_SNAME EQ '0120'.
+*      IF SCREEN-NAME = 'BTN01'.
+*        SCREEN-ACTIVE = 0.
+*        MODIFY SCREEN.
+*      ENDIF.
+*      IF SCREEN-NAME = 'BTN02'.
+*        SCREEN-ACTIVE = 0.
+*        MODIFY SCREEN.
+*      ENDIF.
+*    IF SCREEN-NAME = 'BTN03'.
+*        SCREEN-ACTIVE = 1.
+*        MODIFY SCREEN.
+*      ENDIF.
+*    ENDIF.
+*
+*  ENDLOOP.
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*& Module ALV_INIT_DISPLAY_0100 OUTPUT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+MODULE ALV_INIT_DISPLAY_0100 OUTPUT.
+
+
+  "-- 화면의  GRID가 BOUND되었는지 확인한다.
+  IF GR_GRID1 IS NOT BOUND. "바운드 - 생성이 되었냐 안되었냐
+
+    "-- GRID의 INSTANCE를 생성한다.
+    PERFORM CREATE_INSTANCE_0100.
+*
+*    "-- GRID의 LAYOUT 속성을 정의한다.
+    PERFORM INIT_LAYOUT_0100.
+**
+**    "-- ALV Standard toolbar button cotrol
+*  PERFORM SET_GRID_EXCLUDE_0100.
+*
+*    "-- ALV Sort
+*    PERFORM ALV_SORT_0100.
+*
+*    "-- Field Attribute을 사용자의 요구사항에 맞게 변경
+    PERFORM APPEND_FIELDCAT_0100.
+*
+*    "-- ALV Events 등록
+    PERFORM REGIST_ALV_EVENT_0100 USING GR_GRID1.
+*
+*    "-- ALV Display
+    PERFORM DISPLAY_ALV_GRID_0100.
+
+*    "-- ALV Title
+*    PERFORM DISPLAY_ALV_TITLE_0100.
+
+  ELSE.
+
+    "-- ALV Refresh
+    PERFORM REFRESH_GRID_0100.
+
+  ENDIF.
+* SET PF-STATUS 'xxxxxxxx'.
+* SET TITLEBAR 'xxx'.
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*& Module STATUS_0100 OUTPUT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*& Module STATUS_0111 OUTPUT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+MODULE STATUS_0111 OUTPUT.
+  SET PF-STATUS 'PF_0111'.
+  SET TITLEBAR 'T_0200' WITH GV_CNT.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*& Module STATUS_0101 OUTPUT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+MODULE STATUS_0101 OUTPUT.
+  SET PF-STATUS 'PF_0101'.
+  SET TITLEBAR 'T_0101'.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*& Module MODIFY_SCREEN0101 OUTPUT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+MODULE MODIFY_SCREEN0101 OUTPUT.
+  A = ENO-LOW.
+  B = NAME-LOW.
+  C = DEPT-LOW.
+  D = SEQ-LOW.
+  E = NYEAR-LOW.
+
+  IF EP-LOW IS INITIAL.
+    F = '미입력'.
+
+  ELSE.
+    F = EP-LOW.
+  ENDIF.
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*& Module STATUS_0112 OUTPUT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+MODULE STATUS_0112 OUTPUT.
+  SET PF-STATUS 'PF_0112'.
+  SET TITLEBAR 'T_0112'.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*& Module STATUS_0130 OUTPUT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+MODULE STATUS_0130 OUTPUT.
+  SET PF-STATUS 'PF_0112'.
+  SET TITLEBAR 'T_0130'.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*& Module STATUS_0113 OUTPUT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+MODULE STATUS_0113 OUTPUT.
+  SET PF-STATUS 'PF_0112'.
+  SET TITLEBAR 'T_0113'.
+ENDMODULE.
+
+-----------------------------------------------------------
+Extracted by Mass Download version1.5.2 - E.G.Mellodew. 1998-2019. Sap Release753

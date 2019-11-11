@@ -1,0 +1,380 @@
+*&---------------------------------------------------------------------*
+*& Include          ZM_LHS_HR1I01
+*&---------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      Module  EXIT  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE EXIT INPUT.
+
+*-- OK_CODE ACTIONS.
+  CASE OK_CODE.
+    WHEN 'CANC'.
+      LEAVE TO SCREEN 0. "원래 있던 스크린에서 전 스크린으로 가라는 얘기
+
+    WHEN 'EXIT'.
+      LEAVE PROGRAM.
+
+    WHEN OTHERS.
+  ENDCASE.
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0100  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0100 INPUT.
+
+  CLEAR: SAVE_OK.
+
+  "-- move ok code.
+  SAVE_OK = OK_CODE.
+  CLEAR: OK_CODE.
+
+*-- SAVE_OK ACTIONS.
+  CASE SAVE_OK.
+    WHEN 'BACK'.
+      LEAVE TO SCREEN 0.
+
+    WHEN 'LOED'.
+      GV_SNAME = '0200'.
+
+    WHEN 'SELE'.
+      GV_SNAME = '0110'.
+
+    WHEN 'CREA'.
+      GV_SNAME = '0120'.
+    WHEN 'FIRE'.
+
+
+    WHEN 'F_FIND'.
+      PERFORM F4_FILE CHANGING P_FILE.
+
+    WHEN 'BTN01'.
+
+      IF GV_SNAME = '0200' . "업로드
+
+        PERFORM EXCELUPLOAD.
+        CHECK GV_ERROR IS INITIAL.
+
+        PERFORM POPUP_TO_CONFIRM USING TEXT-PT1"타이틀
+                                      TEXT-QT1.
+        CHECK GV_ANSWER = '1'.
+
+        PERFORM CREATE_IT_DATA.
+
+        IF GV_ERROR IS INITIAL.
+          MESSAGE S003 WITH GV_CNT.
+        ENDIF.
+
+      ELSEIF GV_SNAME = '0110'. "조회
+        PERFORM SELECT_DATA.
+        CHECK GV_ERROR IS INITIAL.
+        CALL SCREEN '0111'.
+
+      ELSEIF GV_SNAME = '0120'. "입사
+        PERFORM CHECK_FEILD.
+        CHECK GV_ERROR IS INITIAL.
+
+        PERFORM POPUP_TO_CONFIRM USING TEXT-PT2"타이틀
+                                    TEXT-QT2.
+        CHECK GV_ANSWER = '1'.
+
+        PERFORM CREATE_DATA.
+
+        CHECK GV_ERROR IS INITIAL.
+
+        CALL SCREEN '0101' STARTING AT 5 5.
+
+*        PERFORM CLEAR_SO.
+
+      ENDIF.
+
+
+
+
+    WHEN OTHERS.
+  ENDCASE.
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0200  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0200 INPUT.
+
+  CLEAR: SAVE_OK.
+
+  "-- move ok code.
+  SAVE_OK = OK_CODE.
+  CLEAR: OK_CODE.
+
+*-- SAVE_OK ACTIONS.
+  CASE SAVE_OK.
+    WHEN 'F_FIND'.
+      PERFORM F4_FILE CHANGING P_FILE.
+
+    WHEN 'BACK'.
+      LEAVE TO SCREEN 0.
+
+    WHEN 'LOED'.
+      GV_SNAME = '0200'.
+    WHEN 'SELE'.
+      GV_SNAME = '0300'.
+    WHEN 'CREA'.
+      GV_SNAME = '0400'.
+    WHEN 'FIRE'.
+      GV_SNAME = '0500'.
+
+
+
+    WHEN OTHERS.
+  ENDCASE.
+
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0111  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0111 INPUT.
+
+  DATA: LV_INDEX TYPE N.
+
+  CLEAR: SAVE_OK.
+
+  "-- move ok code.
+  SAVE_OK = OK_CODE.
+  CLEAR: OK_CODE.
+
+*-- SAVE_OK ACTIONS.
+  CASE SAVE_OK.
+    WHEN 'BACK'.
+      LEAVE TO SCREEN 0.
+
+    WHEN 'DELE'.  "삭제
+      CLEAR: GV_ERROR.
+
+*   PERFORM REFRESH_GRID_0100.
+
+      READ TABLE GT_DISPLAY WITH KEY CHECK = 'X'.
+
+      IF SY-SUBRC EQ 0.
+        CALL SCREEN 0112 STARTING AT 5 5.
+
+      ELSE.
+        GV_ERROR = 'X'.
+        MESSAGE S000 WITH TEXT-M03 DISPLAY LIKE 'E'.
+        EXIT.
+      ENDIF.
+
+    WHEN 'CHAG'.  "삭제
+      CLEAR: GV_ERROR.
+
+*   PERFORM REFRESH_GRID_0100.
+
+      READ TABLE GT_DISPLAY WITH KEY CHECK = 'X'.
+
+      IF SY-SUBRC EQ 0.
+        CALL SCREEN 0113 STARTING AT 5 5.
+
+      ELSE.
+        GV_ERROR = 'X'.
+        MESSAGE S000 WITH TEXT-M03 DISPLAY LIKE 'E'.
+        EXIT.
+      ENDIF.
+
+
+
+    WHEN OTHERS.
+  ENDCASE.
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0101  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0101 INPUT.
+
+  SAVE_OK = OK_CODE.
+  CLEAR: OK_CODE.
+
+*-- SAVE_OK ACTIONS.
+  CASE SAVE_OK.
+    WHEN 'OK'.
+      LEAVE TO SCREEN 0.
+
+    WHEN OTHERS.
+  ENDCASE.
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0112  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0112 INPUT.
+
+  CLEAR: SAVE_OK.
+  DATA:   LV_COUNT TYPE I.
+
+  SAVE_OK = OK_CODE.
+  CLEAR: OK_CODE.
+
+*-- SAVE_OK ACTIONS.
+  CASE SAVE_OK.
+    WHEN 'OK'.
+
+
+      LOOP AT GT_DISPLAY WHERE CHECK EQ 'X'.
+        DELETE FROM Z20_HR1 WHERE EMP_NO EQ GT_DISPLAY-EMP_NO.
+        DELETE  GT_DISPLAY[] WHERE EMP_NO EQ GT_DISPLAY-EMP_NO .
+        LV_COUNT = LV_COUNT + 1.
+      ENDLOOP.
+
+      DESCRIBE TABLE GT_DISPLAY LINES GV_CNT.
+
+      PERFORM REFRESH_GRID_0100.
+
+      MESSAGE S015 WITH  LV_COUNT.
+
+      CLEAR : LV_COUNT.
+
+      LEAVE TO SCREEN 0.
+
+
+
+    WHEN OTHERS.
+  ENDCASE.
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0130  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0130 INPUT.
+
+  CLEAR: SAVE_OK.
+*DATA:   LV_COUNT TYPE I.
+
+  SAVE_OK = OK_CODE.
+  CLEAR: OK_CODE.
+
+*-- SAVE_OK ACTIONS.
+  CASE SAVE_OK.
+    WHEN 'OK'.
+
+*DATA: LV_DISPLAY LIKE TABLE OF GT_DISPLAY WITH HEADER LINE.
+*
+*SELECT *
+*  INTO CORRESPONDING FIELDS OF TABLE LV_DISPLAY
+*  FROM Z20_HR1
+*  WHERE
+*
+*
+*
+* LOOP AT GT_DISPLAY WHERE CHECK EQ 'X'.
+*        DELETE FROM Z20_HR1 WHERE EMP_NO EQ GT_DISPLAY-EMP_NO.
+*         DELETE  GT_DISPLAY[] WHERE EMP_NO EQ GT_DISPLAY-EMP_NO .
+*         LV_COUNT = LV_COUNT + 1.
+*        ENDLOOP.
+*
+*DESCRIBE TABLE GT_DISPLAY LINES GV_CNT.
+*
+*        PERFORM REFRESH_GRID_0100.
+*
+*                MESSAGE S015 WITH  LV_COUNT.
+*
+*CLEAR : LV_COUNT.
+
+      LEAVE TO SCREEN 0.
+
+
+
+    WHEN OTHERS.
+  ENDCASE.
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0113  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0113 INPUT.
+
+  CLEAR: SAVE_OK.
+
+  DATA: LV_COUNT2 TYPE I.
+  DATA: LS_DD07V TYPE DD07V.
+  DATA: LV_VALUE TYPE DD07L-DOMVALUE_L.
+
+  DATA :LS_Z20_HR2 TYPE Z20_HR1.
+
+  DATA: LT_DBTAB2 TYPE TABLE OF Z20_HR1 WITH HEADER LINE.
+
+  SAVE_OK = OK_CODE.
+  CLEAR: OK_CODE.
+
+*-- SAVE_OK ACTIONS.
+  CASE SAVE_OK.
+    WHEN 'OK'.
+
+      LOOP AT GT_DISPLAY WHERE CHECK EQ 'X'.
+        GT_DISPLAY-EMP_SEQ = GV_SEQ.
+
+        LV_VALUE = GV_SEQ.
+        CALL FUNCTION 'DD_DOMVALUE_TEXT_GET'
+        "테이블이 아닌 스트럭처 하나만 들고옴.
+          EXPORTING
+            DOMNAME  = 'ZD_ERANK'
+            VALUE    = LV_VALUE
+            LANGU    = SY-LANGU
+          IMPORTING
+            DD07V_WA = LS_DD07V.
+
+        GT_DISPLAY-EMP_RANK = LS_DD07V-DDTEXT.
+        GT_DISPLAY-AEDAT = SY-DATUM.
+        GT_DISPLAY-AENAME = SY-UNAME.
+        GT_DISPLAY-AETIM = SY-UZEIT.
+        CLEAR : GT_DISPLAY-CHECK.
+
+*        MOVE-CORRESPONDING GT_DISPLAY TO LS_Z20_HR1
+        MODIFY GT_DISPLAY[] FROM GT_DISPLAY.
+
+        LOOP AT GT_DISPLAY.   "하드한 데이터베이스 바꿔주는 구문
+          MOVE-CORRESPONDING GT_DISPLAY TO LT_DBTAB2. "gt테이블 헤더에서 LT테이블 헤더로 옮겨줌.
+          LT_DBTAB2-AEDAT = SY-DATUM.            "동일할시
+          LT_DBTAB2-AENAME = SY-UNAME.
+          LT_DBTAB2-AETIM = SY-UZEIT.
+
+          MODIFY Z20_HR1 FROM LT_DBTAB2.
+
+        ENDLOOP.
+
+        LV_COUNT2 = LV_COUNT2 + 1.
+      ENDLOOP.
+
+
+      PERFORM REFRESH_GRID_0100.
+
+      MESSAGE S016 WITH  LV_COUNT2.
+
+      CLEAR : LV_COUNT2.
+
+      LEAVE TO SCREEN 0.
+
+
+
+    WHEN OTHERS.
+  ENDCASE.
+
+ENDMODULE.
+
+-----------------------------------------------------------
+Extracted by Mass Download version1.5.2 - E.G.Mellodew. 1998-2019. Sap Release753
