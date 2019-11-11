@@ -1,0 +1,82 @@
+*&---------------------------------------------------------------------*
+*& Include          ZDUCK_II03
+*&---------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0110  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0110 INPUT.
+
+  SAVE_OK = OK_CODE.
+  CLEAR: OK_CODE.
+
+*-- SAVE_OK ACTIONS.
+  CASE SAVE_OK.
+    WHEN 'OK'.
+
+      PERFORM MODIFY_INFO.
+      LEAVE TO SCREEN 0.
+    WHEN 'CANC'.
+
+      CLEAR: INPUT4, INPUT6, GT_DISPLAY-CHECK.
+
+      LEAVE TO SCREEN 0.
+    WHEN OTHERS.
+  ENDCASE.
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0120  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0120 INPUT.
+
+  SAVE_OK = OK_CODE.
+  CLEAR: OK_CODE.
+
+*-- SAVE_OK ACTIONS.
+  CASE SAVE_OK.
+    WHEN 'OK'.
+
+
+      LEAVE TO SCREEN 0.
+    WHEN 'CANC'.
+
+
+
+      LEAVE TO SCREEN 0.
+    WHEN OTHERS.
+  ENDCASE.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0900  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0900 INPUT.
+
+
+  SAVE_OK = OK_CODE.
+  CLEAR: OK_CODE.
+
+*-- SAVE_OK ACTIONS.
+  CASE SAVE_OK.
+    WHEN 'OK'.
+
+      GV_FLUG = 'X'.
+      LEAVE TO SCREEN 0.
+    WHEN 'CANC'.
+
+
+
+
+      LEAVE PROGRAM.
+    WHEN OTHERS.
+  ENDCASE.
+
+ENDMODULE.
+
+-----------------------------------------------------------
+Extracted by Mass Download version1.5.2 - E.G.Mellodew. 1998-2019. Sap Release753

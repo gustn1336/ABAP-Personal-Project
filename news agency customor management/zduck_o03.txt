@@ -1,0 +1,82 @@
+*&---------------------------------------------------------------------*
+*& Include          ZDUCK_O03
+*&---------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*& Module STATUS_0110 OUTPUT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+MODULE STATUS_0110 OUTPUT.
+  SET PF-STATUS 'PF_0110'.
+* SET TITLEBAR 'xxx'.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*& Module MODIFY_SCREEN OUTPUT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+MODULE MODIFY_SCREEN OUTPUT.
+
+  INPUT1 = SY-UNAME.
+  INPUT2 = GT_DISPLAY-C_NAME.
+  INPUT3 = GT_DISPLAY-TELE.
+  INPUT5 = GT_DISPLAY-PHONE.
+
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*& Module MODIFY_SCREEN0120 OUTPUT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+MODULE MODIFY_SCREEN0120 OUTPUT.
+
+  RAND = GT_DISPLAY-C_NAME.
+  GIFT = GT_GIFT-GIFT.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*& Module STATUS_0900 OUTPUT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+MODULE STATUS_0900 OUTPUT.
+  SET PF-STATUS 'PF_0110'.
+* SET TITLEBAR 'xxx'.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*& Module MODIFY_LOGIN OUTPUT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+MODULE MODIFY_LOGIN OUTPUT.
+  DATA LO_CONTAINER      TYPE REF TO CL_GUI_CUSTOM_CONTAINER.
+  DATA LO_PIC            TYPE REF TO CL_GUI_PICTURE.
+
+  DATA LV_RESULT TYPE INT4.
+
+  CREATE OBJECT LO_CONTAINER
+    EXPORTING
+      CONTAINER_NAME = 'IMAGE'.
+
+  CREATE OBJECT LO_PIC
+    EXPORTING
+      PARENT = LO_CONTAINER.
+
+  CALL METHOD LO_PIC->LOAD_PICTURE_FROM_URL
+    EXPORTING
+      URL    =
+               'https://ifh.cc/g/07DNX.jpg'
+    IMPORTING
+      RESULT = LV_RESULT.
+
+
+
+  ID = SY-UNAME.
+
+  GV_FLUG = 'X'.
+
+
+ENDMODULE.
+
+-----------------------------------------------------------
+Extracted by Mass Download version1.5.2 - E.G.Mellodew. 1998-2019. Sap Release753
